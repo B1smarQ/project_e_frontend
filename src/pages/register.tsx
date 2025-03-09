@@ -2,6 +2,7 @@ import {useState, FormEvent, ChangeEvent} from "react";
 import axios from 'axios'
 import {Link} from "react-router-dom";
 import Header from "../components/Header.tsx";
+import {toast, ToastContainer} from "react-toastify";
 export default function Register(){
 
 
@@ -24,7 +25,7 @@ export default function Register(){
 
             );
             if (response.status === 201) {
-                alert('Registration successful');
+                toast.success("Registration successful!")
                 localStorage.setItem('authKey', response.data.authKey);
                 window.location.href = '/login'
             }

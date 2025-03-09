@@ -2,7 +2,7 @@ import axios from "axios";
 import {useEffect, useState} from "react";
 import Header from "../components/Header.tsx";
 import {Link} from "react-router-dom";
-
+import { ToastContainer, toast } from 'react-toastify';
 interface NewsPost {
     title: string;
     content: string;
@@ -25,6 +25,7 @@ export default function News() {
         await  postRequest();
     }
 
+
     const postRequest = async () => {
         console.log('submit')
         const newPost = {
@@ -46,11 +47,13 @@ export default function News() {
                     withCredentials:false
                 });
             console.log('post sent')
+            toast.success('Post sent!')
             console.log(response)
-            setNewsPosts([...newsPosts, newPost]);
+            setNewsPosts([newPost,...newsPosts]);
             setTitle('');
             setContent('');
         } catch (error) {
+            toast.error('Error sending post!')
             console.error('Error creating post:', error);
         }
     }
@@ -59,13 +62,17 @@ export default function News() {
             <div className={" box ml-6 mr-6"}>
                 <p className={"subtitle ml-6 mr-6 mb-5"}>What's new?</p>
                 <form onSubmit={(e)=> {handleSubmit(e).then(() => {
+                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                    // @ts-expect-error
                     document.getElementById('title').value = '';
+                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                    // @ts-expect-error
                     document.getElementById('content').value = '';
                 })}} className={"ml-6 mr-6"}>
                     <div className={"field"}>
                         <label className={"label"}>Title</label>
                         <div className={"control"}>
-                            <input className={"input"} type="text" name="title" id = "title" required onChange={handlePostTitleChange}/>
+                            <input className={"input"} type="text" name="title" id = "title"  required onChange={handlePostTitleChange}/>
                         </div>
                     </div>
                     <div className={"field"}>
@@ -132,6 +139,18 @@ export default function News() {
                     </div>
                 )}
             </div>
+            <ToastContainer
+                position="top-right"
+                autoClose={5000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick={false}
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="dark"
+            />
         </>
     )
 }

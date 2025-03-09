@@ -2,6 +2,7 @@ import {SetStateAction, useState} from "react";
 import axios from 'axios'
 import Header from "../components/Header.tsx";
 import {Link} from "react-router-dom";
+import {toast, ToastContainer} from "react-toastify";
 
 const formStyle = {
     form: {
@@ -75,12 +76,14 @@ export default function Login() {
                 });
             if(response.status === 200){
                 loggedIn = true;
-                alert('Login successful');
+                toast.success('Logged in successfully');
                 localStorage.setItem('authKey', response.data.authKey);
                 location.reload();
             }
+
         } catch (error) {
-            console.error("Error:", error);
+            toast.error('Error while logging in');
+            console.log(error)
         }
     }
 
@@ -100,6 +103,7 @@ export default function Login() {
 
                 {loggedIn?loginSuccess():notLoggedIn()}
             </div>
+
         </>
     )
 }

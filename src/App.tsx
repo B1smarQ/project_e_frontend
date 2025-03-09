@@ -6,6 +6,7 @@ import NotFound from "./pages/notFound.tsx";
 import News from "./pages/News.tsx";
 import Profile from "./pages/profile.tsx";
 import Register from "./pages/register.tsx";
+import {ToastContainer} from "react-toastify";
 function App() {
 
 
@@ -20,6 +21,18 @@ function App() {
             <Route path="*" element={<NotFound />} />
 
         </Routes>
+        <ToastContainer
+            position="top-right"
+            autoClose={5000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick={false}
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme="dark"
+        />
     </BrowserRouter>
   )
 }

@@ -1,6 +1,7 @@
 import Header from "../components/Header.tsx";
 import {useEffect, useState} from "react";
 import axios from "axios";
+import {toast, ToastContainer} from "react-toastify";
 
 interface NewsPost {
     title: string;
@@ -45,7 +46,8 @@ export default  function Profile(){
     const deletePost = async(postId) =>{
         try {
             const response = await axios.delete(`http://localhost:3000/posts/delete/${postId}`,);
-            location.reload();
+            toast.success("Post deleted");
+            fetchPosts()
         }
         catch (error) {
             console.error(error);
