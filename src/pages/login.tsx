@@ -78,6 +78,7 @@ export default function Login() {
                 loggedIn = true;
                 toast.success('Logged in successfully');
                 localStorage.setItem('authKey', response.data.authKey);
+                localStorage.setItem('userName', response.data.userName);
                 location.reload();
             }
 

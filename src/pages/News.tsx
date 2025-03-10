@@ -1,26 +1,29 @@
 import axios from "axios";
-import {useEffect, useState} from "react";
+import {FormEvent, SetStateAction, useEffect, useState} from "react";
 import Header from "../components/Header.tsx";
 import {Link} from "react-router-dom";
-import { ToastContainer, toast } from 'react-toastify';
+import {ToastContainer, toast} from 'react-toastify';
+
 interface NewsPost {
     title: string;
     content: string;
+    userName: string;
+    postTime: string;
 }
 
 export default function News() {
     const [newsPosts, setNewsPosts] = useState<NewsPost[]>([]);
     const [isLoading, setIsLoading] = useState(true);
-    const loggedIn = localStorage.getItem('authKey') !=null;
+    const loggedIn = localStorage.getItem('authKey') != null;
     const [postTitle, setTitle] = useState('');
     const [postContent, setContent] = useState('');
-    const handlePostTitleChange = (e) =>{
+    const handlePostTitleChange = (e: { target: { value: SetStateAction<string>; }; }) => {
         setTitle(e.target.value);
     }
-    const handlePostContentChange = (e) =>{
+    const handlePostContentChange = (e: { target: { value: SetStateAction<string>; }; }) => {
         setContent(e.target.value);
     }
-    const handleSubmit = async (e) => {
+    const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         await  postRequest();
     }
@@ -39,6 +42,7 @@ export default function News() {
                 title: newPost.title,
                 content: newPost.content,
                 userAuth: newPost.userAuth,
+                userName: localStorage.getItem('userName'),
             },
                 {
                     headers: {
@@ -49,9 +53,12 @@ export default function News() {
             console.log('post sent')
             toast.success('Post sent!')
             console.log(response)
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-expect-error
             setNewsPosts([newPost,...newsPosts]);
             setTitle('');
             setContent('');
+            fetchData();
         } catch (error) {
             toast.error('Error sending post!')
             console.error('Error creating post:', error);
@@ -129,7 +136,10 @@ export default function News() {
                                         </span>
                                     </div>
                                     <div className={"media-content"}>
-                                        <h1 className={"title"}>{post.title}</h1>
+                                        <div className={"level"}>
+                                            <h1 className={"title"}>{post.title}</h1>
+                                            <h2 className={"subtitle"}>{post.userName}</h2>
+                                        </div>
                                         <p className={"subtitle"}>{post.content}</p>
                                         <p className={"subtitle"}>{post.postTime}</p>
                                     </div>

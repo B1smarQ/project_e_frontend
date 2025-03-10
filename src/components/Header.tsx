@@ -3,7 +3,7 @@ export default function Header(){
         const loggedIn = localStorage.getItem('authKey') != null;
         return loggedIn? (
             <div className={"column is-flex is-justify-content-center"}>
-                <h1 className={"title"}>
+                <h1 className={"subtitle"}>
                     <a href="/profile" className={"has-text-white"}>
                         Profile
                     </a>
@@ -12,7 +12,7 @@ export default function Header(){
         ):
             (
                 <div className={"column is-flex is-justify-content-center"}>
-                    <h1 className={"title"}>
+                    <h1 className={"subtitle"}>
                         <a href="/login" className={"has-text-white"}>
                             Log In
                         </a>
@@ -26,17 +26,15 @@ export default function Header(){
             <div className="container has-background-black-soft is-transparent">
                 <div className="columns">
                     <div className="column is-flex is-justify-content-center">
-                        <h1 className={"title"}>
+                        <h1 className={"subtitle"}>
                         <a href="/" className={"has-text-white"}>
                                 Home
                             </a>
                         </h1>
                     </div>
                     <div className={"column is-flex is-justify-content-center"}>
-                        <h1 className={"title"}>
-                            <a href="/news" className={"has-text-white"}>
-                                News
-                            </a>
+                        <h1 className={"title is-large"}>
+                            E
                         </h1>
                     </div>
                     {profileButton()}

@@ -2,14 +2,14 @@ import {useState, FormEvent, ChangeEvent} from "react";
 import axios from 'axios'
 import {Link} from "react-router-dom";
 import Header from "../components/Header.tsx";
-import {toast, ToastContainer} from "react-toastify";
+import {toast} from "react-toastify";
 export default function Register(){
 
 
     async function registerRequest() {
         console.log("registerRequest")
         if (passwordValue !== confirmPasswordValue) {
-            alert('Passwords do not match.');
+            toast.error('Passwords do not match.');
             return;
         }
         console.log("sending request")
@@ -27,25 +27,26 @@ export default function Register(){
             if (response.status === 201) {
                 toast.success("Registration successful!")
                 localStorage.setItem('authKey', response.data.authKey);
+                localStorage.setItem('userName', response.data.userName);
                 window.location.href = '/login'
             }
             else if(response.status == 409){
-                alert('Username already exists');
+                toast.error('User already exists!');
                 console.log(response);
             }
             else {
-                alert('Registration failed');
+                toast.error('Unknown error');
                 console.log(response);
             }
             console.log(response);
         } catch (error) {
             if(error.status === 409){
-                alert('Username already exists');
+                toast.error('Username already exists');
                 console.log(error.response);
             }
             else {
                 console.error(error);
-                alert('Registration failed: ' + (error.response?.data?.message || 'Unknown error'));
+                toast.error('Registration failed: ' + (error.response?.data?.message || 'Unknown error'));
             }
         }
     }
