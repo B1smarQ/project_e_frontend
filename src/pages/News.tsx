@@ -1,151 +1,129 @@
 import axios from "axios";
-import {FormEvent, SetStateAction, useEffect, useState} from "react";
+import {FormEvent, FormEventHandler, SetStateAction, useEffect, useState} from "react";
 import Header from "../components/Header.tsx";
 import {Link} from "react-router-dom";
 import {ToastContainer, toast} from 'react-toastify';
 
-interface NewsPost {
-    title: string;
-    content: string;
-    userName: string;
-    postTime: string;
+
+interface thread {
+    id: number,
+    threadTitle: string,
+    threadAuthor: string
+    messages: number
 }
 
 export default function News() {
-    const [newsPosts, setNewsPosts] = useState<NewsPost[]>([]);
+
+    const [threads, setThreads] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const loggedIn = localStorage.getItem('authKey') != null;
-    const [postTitle, setTitle] = useState('');
-    const [postContent, setContent] = useState('');
-    const handlePostTitleChange = (e: { target: { value: SetStateAction<string>; }; }) => {
-        setTitle(e.target.value);
-    }
-    const handlePostContentChange = (e: { target: { value: SetStateAction<string>; }; }) => {
-        setContent(e.target.value);
-    }
-    const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        await  postRequest();
-    }
+    const [title, setTitle] = useState('');
+    const userName = localStorage.getItem('userName');
 
-
-    const postRequest = async () => {
-        console.log('submit')
-        const newPost = {
-            title: postTitle,
-            content: postContent,
-            userAuth: localStorage.getItem('authKey'),
-        };
+    const fetchThreads = async () => {
         try {
-            console.log('sending post')
-            const response = await axios.post('http://localhost:3005/', {
-                title: newPost.title,
-                content: newPost.content,
-                userAuth: newPost.userAuth,
-                userName: localStorage.getItem('userName'),
-            },
-                {
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    withCredentials:false
-                });
-            console.log('post sent')
-            toast.success('Post sent!')
-            console.log(response)
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-expect-error
-            setNewsPosts([newPost,...newsPosts]);
-            setTitle('');
-            setContent('');
-            fetchData();
+            const response = await axios.get('http://localhost:3000/posts/threads');
+            setThreads(response.data);
         } catch (error) {
-            toast.error('Error sending post!')
-            console.error('Error creating post:', error);
+            console.error('Error fetching threads:', error);
         }
     }
-    const postForm = () =>{
-        return(
-            <div className={" box ml-6 mr-6"}>
-                <p className={"subtitle ml-6 mr-6 mb-5"}>What's new?</p>
-                <form onSubmit={(e)=> {handleSubmit(e).then(() => {
-                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                    // @ts-expect-error
-                    document.getElementById('title').value = '';
-                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                    // @ts-expect-error
-                    document.getElementById('content').value = '';
-                })}} className={"ml-6 mr-6"}>
+
+
+    useEffect(() => {
+        fetchThreads().then(() => setIsLoading(false));
+    }, []);
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        const newThread = {
+            title: e.target.threadTitle.value,
+            author: localStorage.getItem('userName'),
+        }
+        try {
+            await axios.post('http://localhost:3005/threads', newThread);
+            toast.success("Thread created successfully");
+            await fetchThreads();
+        } catch (error) {
+            console.error('Error creating thread:', error);
+            toast.error("Error creating thread");
+        }
+    }
+
+    const deleteThreadRequest = async (id:number) =>{
+        try {
+            await axios.delete(`http://localhost:3000/posts/threads/${id}`);
+            toast.success("Thread deleted successfully");
+            await fetchThreads();
+        } catch (error) {
+            console.error('Error deleting thread:', error);
+            toast.error("Error deleting thread");
+        }
+    }
+
+    const handleTitleChange = (e) => {
+        setTitle(e.target.value);
+    }
+
+
+    const threadCreationForm = () => {
+        return (
+            <div className={"card ml-6 mr-6"}>
+                <form onSubmit={handleSubmit}>
                     <div className={"field"}>
                         <label className={"label"}>Title</label>
                         <div className={"control"}>
-                            <input className={"input"} type="text" name="title" id = "title"  required onChange={handlePostTitleChange}/>
+                            <input className={"input"} type={"text"} name={"threadTitle"} required
+                                   onChange={handleTitleChange}/>
                         </div>
                     </div>
+
                     <div className={"field"}>
-                        <label className={"label"}>Content</label>
                         <div className={"control"}>
-                            <textarea className={"textarea"} name="content" id = "content" required onChange={handlePostContentChange}/>
+                            <button className={"button is-primary"} type="submit">Create Thread</button>
                         </div>
-                    </div>
-                    <div className={"field"}>
-                        <button className={"button is-primary"} type="submit">Submit</button>
                     </div>
                 </form>
             </div>
         )
     }
-    const fetchData = async () => {
-        try {
-            const response = await axios.get('http://localhost:3000/posts');
-            setNewsPosts(response.data);
-            console.log('Data fetched');
-            console.log(newsPosts)
-        } catch (error) {
-            console.error('Error fetching posts:', error);
-        }
-    }
-
-    useEffect(() => {
-        fetchData().then(() => setIsLoading(false));
-    }, []);
 
     return (
         <>
             <Header/>
             <div className={"is-display-grid"}>
-                <h1 className={"title has-text-centered mt-6"}>Posts</h1>
-                {!loggedIn ? (
-                    <div className={"notification is-warning ml-6 mr-6 is-flex is-justify-content-space-between"}>
-                        <p>You are not logged in</p>
-                        <Link to={'/login'}>log in</Link>
-                    </div>):(
-                        postForm()
-                )}
+                <h1 className={"title has-text-centered mt-6"}>Threads</h1>
 
-                {isLoading ? (
-                    <p>Page is loading</p>
-                ) : (
+                {loggedIn && threadCreationForm()}
+                {isLoading && <p>Page is loading</p>}
+                {!isLoading && (
                     <div>
-                        {newsPosts.map((post, index) => (
-                            <div key={index} className={"box ml-6 mr-6 mb-6"}>
-                                <article className={"media"}>
-                                    <div className={"media-left"}>
-                                        <span className={"image is-64x64"}>
-                                            <img src={"https://avatar.iran.liara.run/public"} alt={post.title}/>
-                                        </span>
-                                    </div>
-                                    <div className={"media-content"}>
-                                        <div className={"level"}>
-                                            <h1 className={"title"}>{post.title}</h1>
-                                            <h2 className={"subtitle"}>{post.userName}</h2>
+                        {threads.map((thread: thread, index) => {
+                            return (
+                                <div key={index} className={"card ml-6 mr-6"}>
+                                    <div className={"card-content"}>
+                                        <div className={"media"}>
+                                            <div className={"media-content"}>
+                                                <div className={"is-display-flex is-justify-content-space-between"}>
+                                                    <p className={"title is-4 "}>
+                                                        <Link to={`/thread/${thread.id}`}>{thread.threadTitle}</Link>
+                                                    </p>
+                                                    {(userName === thread.threadAuthor || localStorage.getItem('authKey') === 'admin') &&
+                                                        <button className={"button is-danger"}
+                                                        onClick={async() =>{deleteThreadRequest(thread.id)}}
+                                                        >Delete thread</button> }
+                                                </div>
+                                                <p className={"subtitle is-6"}>
+                                                    By: {thread.threadAuthor}
+                                                </p>
+                                                <p className={"subtitle is-6"}>
+                                                    Messages: {thread.messages}
+                                                </p>
+                                            </div>
                                         </div>
-                                        <p className={"subtitle"}>{post.content}</p>
-                                        <p className={"subtitle"}>{post.postTime}</p>
                                     </div>
-                                </article>
-                            </div>
-                        ))}
+                                </div>
+                            )
+                        })}
                     </div>
                 )}
             </div>

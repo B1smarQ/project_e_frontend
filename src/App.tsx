@@ -7,6 +7,8 @@ import News from "./pages/News.tsx";
 import Profile from "./pages/profile.tsx";
 import Register from "./pages/register.tsx";
 import {ToastContainer} from "react-toastify";
+import Thread from "./pages/Thread.tsx";
+import WIP_Popup from "./components/WIP_Popup.tsx";
 function App() {
 
 
@@ -16,9 +18,10 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
             <Route path="/news" element={<News />} />
-            <Route path="/profile" element={<Profile />} />
+            <Route path="/profile/:id" element={<Profile />} />
             <Route path="/register" element={<Register/>}></Route>
             <Route path="*" element={<NotFound />} />
+            <Route path="/thread/:id" element={<Thread/>}/>
 
         </Routes>
         <ToastContainer

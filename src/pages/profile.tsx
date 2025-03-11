@@ -2,7 +2,7 @@ import Header from "../components/Header.tsx";
 import {useEffect, useState} from "react";
 import axios from "axios";
 import {toast, ToastContainer} from "react-toastify";
-import {data} from "react-router-dom";
+import {data, useParams} from "react-router-dom";
 
 interface NewsPost {
     title: string;
@@ -17,11 +17,13 @@ export default  function Profile(){
     const [editedPost, setEditedPost] = useState<NewsPost>(null);
     const [title,setTitle] = useState('');
     const [content, setContent] = useState('');
+    const params = useParams();
+    const isCurrentUser = params.id === localStorage.getItem('authKey');
     const fetchPosts = async() =>{
         try{
             console.log('Fetching posts')
             const response = await axios.get('http://localhost:3000/posts/userPosts',{
-                headers: {Authorization: localStorage.getItem('authKey')}
+                headers: {Authorization: params.id}
             });
             setNewsPosts(response.data)
             console.log('Posts fetched', response.data)
@@ -140,14 +142,14 @@ export default  function Profile(){
                         <p className={"subtitle"}>{post.content}</p>
                         <p className={"mt-5"}> {post.postTime}</p>
                         <div className={" "}>
-                            <button className={"button is-danger mt-4"} data-atr={post.id} onClick={() =>{deletePost(post.id)}}>Delete post</button>
-                            <button className={"button is-info mt-4 ml-6" } onClick={()=>
+                            {isCurrentUser&& <button className={"button is-danger mt-4"} data-atr={post.id} onClick={() =>{deletePost(post.id)}}>Delete post</button>}
+                            {isCurrentUser&& <button className={"button is-info mt-4 ml-6" } onClick={()=>
                             {
                                 setEditing(!isEditing);
                                 setEditedPost(post);
                                 setTitle(post.title);
                                 setContent(post.content);
-                            }}    >Edit post</button>
+                            }}    >Edit post</button>}
                         </div>
                     </div>
                 ))}

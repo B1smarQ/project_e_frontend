@@ -4,7 +4,7 @@ export default function Header(){
         return loggedIn? (
             <div className={"column is-flex is-justify-content-center"}>
                 <h1 className={"subtitle"}>
-                    <a href="/profile" className={"has-text-white"}>
+                    <a href={`/profile/${localStorage.getItem('authKey')}`} className={"has-text-white"}>
                         Profile
                     </a>
                 </h1>
