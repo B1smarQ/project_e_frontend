@@ -4,8 +4,8 @@ import {toast, ToastContainer} from "react-toastify";
 import {FormEvent, JSX, SetStateAction, useCallback, useEffect, useState} from "react";
 import Header from "../components/Header.tsx";
 import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm'; // Import remark-gfm for GitHub Flavored Markdown
-import remarkBreaks from 'remark-breaks'; // Import remark-breaks for line breaks
+import remarkGfm from 'remark-gfm';
+import remarkBreaks from 'remark-breaks';
 
 interface NewsPost {
     userAuth: string;
@@ -66,18 +66,18 @@ export default function Thread() {
         console.log('submit')
         const newPost = {
             title: postTitle,
-            content: postContent, // This will be treated as markdown
+            content: postContent,
             userAuth: localStorage.getItem('authKey'),
         };
         try {
             console.log('sending post')
             const response = await axios.post('http://localhost:3005/', {
                     title: newPost.title,
-                    content: newPost.content, // Sending markdown content
+                    content: newPost.content,
                     userAuth: newPost.userAuth,
                     userName: localStorage.getItem('userName'),
                     threadId: params.id,
-                    isMarkdown: true // Adding flag to indicate markdown content
+                    isMarkdown: true
                 },
                 {
                     headers: {
@@ -106,7 +106,7 @@ export default function Thread() {
                 // Ensure markdown content is properly preserved
                 const formattedPosts = res.data.map((post: NewsPost) => ({
                     ...post,
-                    content: post.content || '' // Ensure content is never null/undefined
+                    content: post.content || '' // content is never null/undefined
                 }));
                 setPosts(formattedPosts);
             })
@@ -114,7 +114,7 @@ export default function Thread() {
                 toast.error("Failed to fetch posts");
                 console.error(err);
             });
-    }, [params.id]); // Add params.id as dependency
+    }, [params.id]);
 
     const deletePost = (id:number)=>{
         axios.delete(`http://localhost:3000/posts/delete/${id}`, {
@@ -192,7 +192,7 @@ export default function Thread() {
     useEffect(() => {
         fetchPosts();
         setLoading(false);
-    }, [fetchPosts]); // Add fetchPosts to dependency array
+    }, [fetchPosts]);
 
     return (
         <div>

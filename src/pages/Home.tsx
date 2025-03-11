@@ -8,7 +8,7 @@ export default function Home(){
         const loggedIn = localStorage.getItem("authKey")!=null;
 
         if(loggedIn){
-            return <Link to = {'/profile'} className={className}> My Profile</Link>
+            return <Link to = {`/profile/${localStorage.getItem('authKey')}`} className={className}> My Profile</Link>
         }
         return <Link to = {'/login'} className={className}> Login</Link>
     }
